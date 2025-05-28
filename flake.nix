@@ -24,7 +24,7 @@
               cabal-install
               (haskellPackages.ghcWithPackages (p:
                 with p; [
-                  flex
+                  alex
                   happy
                 ]))            
               ];
