@@ -22,16 +22,14 @@
             buildInputs = with pkgs; [
               haskell-language-server
               cabal-install
-              (haskellPackages.ghcWithPackages (p: [
-                p.alex
-                p.happy
-<<<<<<< HEAD
-=======
-                p.stack
-                p.hpack
->>>>>>> cyang_dev
-              ]))
-            ];
+              (haskellPackages.ghcWithPackages (p:
+                with p; [
+                  alex
+                  happy
+                  stack
+                  hpack
+                ]))            
+              ];
           };
         };
       }

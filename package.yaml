@@ -12,15 +12,23 @@ dependencies:
   - base >= 4.19.2.0 && < 4.20
   - array >= 0.5 && < 0.6
 
+build-tools:
+  - alex >= 3.5.3.0
+  - happy >= 2.0.2
+
 library:
   source-dirs: lib
   exposed-modules:
-    - MyLib
     - GCContent
     - CppLexer
     - Calc
     - Calc.Lexer
     - Calc.Parser
+    - Lexer
+    - Token
+    - Ast
+    - Parser
+    - Compiler
   language: Haskell2010
   ghc-options: -Wall
 

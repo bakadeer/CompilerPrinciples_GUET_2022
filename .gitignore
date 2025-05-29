@@ -1,5 +1,7 @@
 dist-newstyle
-<<<<<<< HEAD
-=======
 .stack-work
->>>>>>> cyang_dev
+
+/.direnv
+/.vscode
+/.helix
+.envrc
