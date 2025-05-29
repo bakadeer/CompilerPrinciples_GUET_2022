@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 cabal-version:      3.0
 -- The cabal-version field refers to the version of the .cabal specification,
 -- and can be different from the cabal-install (the tool) version and the
@@ -59,12 +60,33 @@ library
 
     -- Modules exported by the library.
     exposed-modules:  
+=======
+cabal-version: 1.18
+
+-- This file has been generated from package.yaml by hpack version 0.38.0.
+--
+-- see: https://github.com/sol/hpack
+
+name:           CompilerPrinciples-GUET2022
+version:        0.1.0.0
+author:         group_of_compile
+maintainer:     114514@example.com
+license:        MIT
+license-file:   LICENSE
+build-type:     Simple
+extra-doc-files:
+    CHANGELOG.md
+
+library
+  exposed-modules:
+>>>>>>> cyang_dev
       MyLib
       GCContent
       CppLexer
       Calc
       Calc.Lexer
       Calc.Parser
+<<<<<<< HEAD
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -133,3 +155,41 @@ test-suite CompilerPrinciples-GUET2022-test
     build-depends:
         base ^>=4.19.2.0,
         CompilerPrinciples-GUET2022
+=======
+  other-modules:
+      Paths_CompilerPrinciples_GUET2022
+  hs-source-dirs:
+      lib
+  ghc-options: -Wall
+  build-depends:
+      array ==0.5.*
+    , base >=4.19.2.0 && <4.20
+  default-language: Haskell2010
+
+executable CompilerPrinciples-GUET2022
+  main-is: Main.hs
+  other-modules:
+      Paths_CompilerPrinciples_GUET2022
+  hs-source-dirs:
+      app
+  ghc-options: -Wall
+  build-depends:
+      CompilerPrinciples-GUET2022
+    , array ==0.5.*
+    , base >=4.19.2.0 && <4.20
+  default-language: Haskell2010
+
+test-suite CompilerPrinciples-GUET2022-test
+  type: exitcode-stdio-1.0
+  main-is: Main.hs
+  other-modules:
+      Paths_CompilerPrinciples_GUET2022
+  hs-source-dirs:
+      test
+  ghc-options: -Wall
+  build-depends:
+      CompilerPrinciples-GUET2022
+    , array ==0.5.*
+    , base >=4.19.2.0 && <4.20
+  default-language: Haskell2010
+>>>>>>> cyang_dev

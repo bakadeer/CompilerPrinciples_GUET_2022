@@ -25,6 +25,11 @@
               (haskellPackages.ghcWithPackages (p: [
                 p.alex
                 p.happy
+<<<<<<< HEAD
+=======
+                p.stack
+                p.hpack
+>>>>>>> cyang_dev
               ]))
             ];
           };
