@@ -28,8 +28,8 @@
                   happy
                   stack
                   hpack
-                ]))            
-              ];
+                ]))
+            ];
           };
         };
       }
