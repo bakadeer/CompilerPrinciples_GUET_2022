@@ -1,10 +1,15 @@
 module Main where
 
+import qualified CppLexer (main)
 import qualified GCContent (main)
-import qualified MyLib (someFunc)
+
+processInput :: String -> IO ()
+processInput "task1.1" = GCContent.main
+processInput "task1.2" = CppLexer.main
+processInput _ = putStrLn "the task is not support"
 
 main :: IO ()
 main = do
-  putStrLn "Hello, Haskell!"
-  MyLib.someFunc
-  GCContent.main
+  readFile "meta/task.info" >>= putStr
+  input <- getLine
+  processInput input
