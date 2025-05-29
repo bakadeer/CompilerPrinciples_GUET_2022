@@ -58,7 +58,9 @@ library
     import:           warnings
 
     -- Modules exported by the library.
-    exposed-modules:  MyLib
+    exposed-modules:  
+      MyLib
+      GCContent
 
     -- Modules included in this library but not exported.
     -- other-modules:
@@ -67,7 +69,9 @@ library
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.19.2.0
+    build-depends:
+      base ^>=4.19.2.0,
+      array ^>=0.5
 
     -- Directories containing source files.
     hs-source-dirs:   lib
