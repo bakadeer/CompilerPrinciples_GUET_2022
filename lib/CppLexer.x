@@ -1,5 +1,5 @@
 {
-module Main (main) where
+module CppLexer (main) where
 import System.IO
 }
 

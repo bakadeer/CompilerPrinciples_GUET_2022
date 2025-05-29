@@ -16,13 +16,18 @@ extra-doc-files:
 
 library
   exposed-modules:
-      MyLib
       GCContent
       CppLexer
       Calc
       Calc.Lexer
       Calc.Parser
+      Lexer
+      Token
+      Ast
+      Parser
+      Compiler
   other-modules:
+      MyLib
       Paths_CompilerPrinciples_GUET2022
   hs-source-dirs:
       lib

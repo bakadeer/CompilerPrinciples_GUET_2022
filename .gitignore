@@ -1,2 +1,6 @@
 dist-newstyle
 .stack-work
+.direnv
+.vscode
+.helix
+.envrc

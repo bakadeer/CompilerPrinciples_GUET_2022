@@ -1,5 +1,5 @@
 {
-module Main (main) where
+module GCContent (main) where
 import System.IO
 import Text.Printf (printf)  -- 导入 printf 函数
 }
