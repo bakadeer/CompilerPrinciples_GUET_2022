@@ -58,16 +58,20 @@ library
     import:           warnings
 
     -- Modules exported by the library.
-    exposed-modules:  MyLib
+    exposed-modules:  Compiler
 
     -- Modules included in this library but not exported.
-    -- other-modules:
+    other-modules:    Token
+                      Lexer
+                      Parser
+                      Ast
 
     -- LANGUAGE extensions used by modules in this package.
     -- other-extensions:
 
     -- Other library packages from which modules are imported.
-    build-depends:    base ^>=4.19.2.0
+    build-depends:    base ^>=4.19.2.0,
+                      array ^>=0.5
 
     -- Directories containing source files.
     hs-source-dirs:   lib

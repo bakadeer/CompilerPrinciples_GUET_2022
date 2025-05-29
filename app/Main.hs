@@ -1,8 +1,8 @@
 module Main where
 
-import qualified MyLib (someFunc)
+import Compiler (compile)
 
 main :: IO ()
 main = do
-  putStrLn "Hello, Haskell!"
-  MyLib.someFunc
+  src <- getContents
+  print $ compile src False
