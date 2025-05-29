@@ -25,6 +25,8 @@
               (haskellPackages.ghcWithPackages (p: [
                 p.alex
                 p.happy
+                p.stack
+                p.hpack
               ]))
             ];
           };
