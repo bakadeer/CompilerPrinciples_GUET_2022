@@ -1,5 +1,5 @@
 {
-module Calc.Parser (parseCalc) where
+module Calc.Parser where
 import Calc.Lexer
 }
 
@@ -8,25 +8,39 @@ import Calc.Lexer
 %error { parseError }
 
 %token
-  num       { TokenNum $$ }
-  '+'       { TokenPlus }
-  '*'       { TokenMult }
+  num      { TokenNum $$ }
+  '+'      { TokenPlus }
+  '-'      { TokenMinus }
+  '*'      { TokenMul }
+  '/'      { TokenDiv }
+  '('      { TokenLParen }
+  ')'      { TokenRParen }
 
-%right '+' -- 加法优先级最低
-%left '*'  -- 乘法优先级高于加法
+%left '+' '-'
+%left '*' '/'
+%right NEG
 
 %%
 
-Expr : num                { $1 }          -- 单个数字
-     | Expr '+' Expr      { $1 + $3 }     -- 加法
-     | Expr '*' Expr      { $1 * $3 }     -- 乘法
+Expr
+  : num                { Num $1 }
+  | Expr '+' Expr      { Add $1 $3 }
+  | Expr '-' Expr      { Sub $1 $3 }
+  | Expr '*' Expr      { Mul $1 $3 }
+  | Expr '/' Expr      { Div $1 $3 }
+  | '-' Expr %prec NEG { Neg $2 }
+  | '(' Expr ')'       { $2 }
 
 {
--- 解析错误处理
 parseError :: [Token] -> a
 parseError _ = error "Parse error"
 
--- 解析函数，供外部调用
-parseCalc :: String -> Int
-parseCalc input = calc (alexScanTokens input)
+data Expr
+  = Num Int
+  | Add Expr Expr
+  | Sub Expr Expr
+  | Mul Expr Expr
+  | Div Expr Expr
+  | Neg Expr
+  deriving (Show, Eq)
 }
