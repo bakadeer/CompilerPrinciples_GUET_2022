@@ -1,0 +1,10 @@
+[tools]
+stack = "3.5.1"
+
+[tasks.build]
+description = "Build the app"
+run = "stack build"
+
+[tasks.app]
+description = "Run the app"
+run = "stack run"

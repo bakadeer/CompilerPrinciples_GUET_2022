@@ -1,5 +1,6 @@
 # CompilerPrinciples_GUET_2022
 
+<<<<<<< HEAD
 
 ## project structure
 
@@ -8,3 +9,11 @@
 - `utils` the build utils script
 ```
 
+=======
+## project structure
+
+```
+- `meta` where to palce alex/happy file
+- `utils` the build utils script
+```
+>>>>>>> origin/main

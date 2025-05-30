@@ -1,6 +1,13 @@
 dist-newstyle
+<<<<<<< HEAD
 
 /.direnv
 /.vscode
 /.helix
+=======
+.stack-work
+.direnv
+.vscode
+.helix
+>>>>>>> origin/main
 .envrc

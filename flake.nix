@@ -26,8 +26,10 @@
                 with p; [
                   alex
                   happy
-                ]))            
-              ];
+                  stack
+                  hpack
+                ]))
+            ];
           };
         };
       }
