@@ -1,6 +1,5 @@
 module Main where
 
-{-
 import qualified Calc (main)
 import qualified CppLexer (main)
 import qualified GCContent (main)
@@ -16,10 +15,3 @@ main = do
   readFile "meta/task.info" >>= putStr
   input <- getLine
   processInput input
--}
-import Compiler (compile)
-
-main :: IO ()
-main = do
-  src <- getContents
-  print $ compile src False

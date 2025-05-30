@@ -20,11 +20,6 @@ library:
     - Calc
     - Calc.Lexer
     - Calc.Parser
-    - Lexer
-    - Token
-    - Ast
-    - Parser
-    - Compiler
   language: Haskell2010
   ghc-options: -Wall
 
