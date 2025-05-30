@@ -15,11 +15,6 @@ dependencies:
 library:
   source-dirs: lib
   exposed-modules:
-    - GCContent
-    - CppLexer
-    - Calc
-    - Calc.Lexer
-    - Calc.Parser
     - Lexer
     - Token
     - Ast
