@@ -2,45 +2,46 @@
 module Parser where
 
 import qualified Token
+import Lexer (SpannedToken(..))
 import Ast hiding (Ast)
 }
 
 %name parseToAst
-%tokentype { Token.Token }
+%tokentype { SpannedToken }
 %error { parseError }
 
 %token
-	const               { Token.Const }
-	var                 { Token.Var }
-	procedure           { Token.Procedure }
-	begin               { Token.Begin }
-	end                 { Token.End }
-	odd                 { Token.Odd }
-	if                  { Token.If }
-	then                { Token.Then }
-	while               { Token.While }
-	do                  { Token.Do }
-	read                { Token.Read }
-	write               { Token.Write }
-	call                { Token.Call }
-	integer             { Token.Integer $$ }
-	identifier          { Token.Identifier $$ }
-	'('                 { Token.LeftParen }
-	')'                 { Token.RightParen }
-	';'                 { Token.Semicolon }
-	':='                { Token.ColonEq }
-	'+'                 { Token.Plus }
-	'-'                 { Token.Minus }
-	'*'                 { Token.Star }
-	'/'                 { Token.Slash }
-	'='                 { Token.Eq }
-	'#'                 { Token.Number }
-	'<'                 { Token.LessThan }
-	'<='                { Token.LessEqThan }
-	'>'                 { Token.GreaterThan }
-	'>='                { Token.GreaterEqThan }
-	','                 { Token.Comma }
-	'.'                 { Token.Dot }
+	const               { SpannedToken _ Token.Const }
+	var                 { SpannedToken _ Token.Var }
+	procedure           { SpannedToken _ Token.Procedure }
+	begin               { SpannedToken _ Token.Begin }
+	end                 { SpannedToken _ Token.End }
+	odd                 { SpannedToken _ Token.Odd }
+	if                  { SpannedToken _ Token.If }
+	then                { SpannedToken _ Token.Then }
+	while               { SpannedToken _ Token.While }
+	do                  { SpannedToken _ Token.Do }
+	read                { SpannedToken _ Token.Read }
+	write               { SpannedToken _ Token.Write }
+	call                { SpannedToken _ Token.Call }
+	integer             { SpannedToken _ (Token.Integer $$) }
+	identifier          { SpannedToken _ (Token.Identifier $$) }
+	'('                 { SpannedToken _ Token.LeftParen }
+	')'                 { SpannedToken _ Token.RightParen }
+	';'                 { SpannedToken _ Token.Semicolon }
+	':='                { SpannedToken _ Token.ColonEq }
+	'+'                 { SpannedToken _ Token.Plus }
+	'-'                 { SpannedToken _ Token.Minus }
+	'*'                 { SpannedToken _ Token.Star }
+	'/'                 { SpannedToken _ Token.Slash }
+	'='                 { SpannedToken _ Token.Eq }
+	'#'                 { SpannedToken _ Token.Number }
+	'<'                 { SpannedToken _ Token.LessThan }
+	'<='                { SpannedToken _ Token.LessEqThan }
+	'>'                 { SpannedToken _ Token.GreaterThan }
+	'>='                { SpannedToken _ Token.GreaterEqThan }
+	','                 { SpannedToken _ Token.Comma }
+	'.'                 { SpannedToken _ Token.Dot }
 
 %%
 -- Utils
@@ -154,6 +155,6 @@ WriteStmt       :: { Stmt }
 				: write '(' Expr CommaDeli(Expr) ')'                        { WriteStmt $ $3: $4 }
 
 {
-parseError :: [Token.Token] -> a
+parseError :: [SpannedToken] -> a
 parseError s = error $ show $ s !! 0
 } 

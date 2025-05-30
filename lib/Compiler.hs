@@ -1,6 +1,6 @@
 module Compiler (compile) where
 
-import Lexer
+import Lexer (alexScanTokens)
 import Parser
 import Ast (Ast)
 
