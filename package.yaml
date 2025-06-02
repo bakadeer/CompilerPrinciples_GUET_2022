@@ -11,6 +11,12 @@ extra-doc-files:
 dependencies:
   - base >= 4.19.2.0 && < 4.20
   - array >= 0.5 && < 0.6
+  - containers >= 0.6.8 && < 0.7.0
+  - mtl >= 2.3.1 && < 2.4.0
+
+build-tools:
+  - alex >= 3.5.3.0 && < 3.6.0.0
+  - happy >= 2.0.2 && < 2.1.0
 
 library:
   source-dirs: lib

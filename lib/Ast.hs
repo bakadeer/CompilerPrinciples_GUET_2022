@@ -1,7 +1,6 @@
 module Ast where
 
-type Ident = String
-type Val = Int
+import SymbolTable (Ident, Val)
 
 type Ast = Program
 

@@ -22,13 +22,19 @@ library
       Parser
       Compiler
   other-modules:
+      SymbolTable
       Paths_CompilerPrinciples_GUET2022
   hs-source-dirs:
       lib
   ghc-options: -Wall
+  build-tools:
+      alex >=3.5.3.0 && <3.6.0.0
+    , happy >=2.0.2 && <2.1.0
   build-depends:
       array ==0.5.*
     , base >=4.19.2.0 && <4.20
+    , containers >=0.6.8 && <0.7.0
+    , mtl >=2.3.1 && <2.4.0
   default-language: Haskell2010
 
 executable CompilerPrinciples-GUET2022
@@ -38,10 +44,15 @@ executable CompilerPrinciples-GUET2022
   hs-source-dirs:
       app
   ghc-options: -Wall
+  build-tools:
+      alex >=3.5.3.0 && <3.6.0.0
+    , happy >=2.0.2 && <2.1.0
   build-depends:
       CompilerPrinciples-GUET2022
     , array ==0.5.*
     , base >=4.19.2.0 && <4.20
+    , containers >=0.6.8 && <0.7.0
+    , mtl >=2.3.1 && <2.4.0
   default-language: Haskell2010
 
 test-suite CompilerPrinciples-GUET2022-test
@@ -52,8 +63,13 @@ test-suite CompilerPrinciples-GUET2022-test
   hs-source-dirs:
       test
   ghc-options: -Wall
+  build-tools:
+      alex >=3.5.3.0 && <3.6.0.0
+    , happy >=2.0.2 && <2.1.0
   build-depends:
       CompilerPrinciples-GUET2022
     , array ==0.5.*
     , base >=4.19.2.0 && <4.20
+    , containers >=0.6.8 && <0.7.0
+    , mtl >=2.3.1 && <2.4.0
   default-language: Haskell2010

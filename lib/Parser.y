@@ -157,4 +157,4 @@ WriteStmt       :: { Stmt }
 {
 parseError :: [SpannedToken] -> a
 parseError s = error $ show $ s !! 0
-} 
+}
