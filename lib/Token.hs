@@ -32,4 +32,7 @@ data Token
   | GreaterEqThan
   | Comma
   | Dot
+  | IllegalChar String  -- For invalid identifiers or operators
+  | IdentTooLong String  -- For identifiers exceeding length limit
+  | IntOverflow String  -- For integers exceeding max value
   deriving (Eq, Show)

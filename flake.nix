@@ -25,6 +25,7 @@
               (haskellPackages.ghcWithPackages (p:
                 with p; [
                   alex
+                  hoogle
                   happy
                   stack
                   hpack
