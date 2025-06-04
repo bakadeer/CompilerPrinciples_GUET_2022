@@ -1,0 +1,25 @@
+const 2a = 123456789;
+
+var    b,c;
+
+//single commit
+
+/*
+ * mutil commit
+ */
+
+
+procedure function1;
+  if 2a <= 10 then
+    begin
+      c := b + a;
+    end;
+  begin
+    read(b);
+    while b @ 0 do
+      begin
+        call function1
+        write(2 * c);
+        read(b);
+      end
+  end

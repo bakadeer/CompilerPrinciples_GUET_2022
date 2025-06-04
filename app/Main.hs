@@ -5,4 +5,4 @@ import Compiler (compile)
 main :: IO ()
 main = do
   src <- getContents
-  print $ compile src False
+  mapM_ putStrLn $ compile src False

@@ -68,8 +68,8 @@ unwrap (SpannedToken _ t) = t
 makeInteger :: AlexPosn -> String -> SpannedToken
 makeInteger p s =
     let val = read s :: Integer
-        maxInt = 2^31 - 1
-        minInt = - (2^31)
+        maxInt = 2^16 - 1
+        minInt = - (2^16)
     in if val > fromIntegral maxInt || val < fromIntegral minInt
        then SpannedToken p (IntOverflow s)
        else SpannedToken p (Integer (fromIntegral val))
