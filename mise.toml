@@ -8,3 +8,7 @@ run = "stack build"
 [tasks.app]
 description = "Run the app"
 run = "stack run"
+
+[tasks.test]
+description = "Run the tests"
+run = "type test\\wrong.pl0 | stack  run"

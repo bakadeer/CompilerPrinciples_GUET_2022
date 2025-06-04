@@ -1,0 +1,23 @@
+const a = 10;
+var a, b, c;
+
+//单行注释
+
+/*
+* 多行注释
+*/
+
+procedure p;
+    if a <= 10 then
+        begin
+            c := b + a;
+        end;
+begin
+    read(p);
+    while b # 0 do
+        begin
+            call q;
+            write(2 * d);
+            read(b);
+        end
+end.
