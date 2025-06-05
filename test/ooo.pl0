@@ -1,24 +1,18 @@
-const a := 10;
-var b,c d;
+const a = 10;
+var a, b, c;
 
-//single commit
 
-/*
- * mutil commits
- */
-
-procedure procedure fun1;
-  if a <= 10
+procedure  p;
+  if a <= 10 then
     begin
-     c = b + a
-    end
+     c := b + a
+    end;
   begin
-    read(b)
-    while b # 0
+    read(p);
+    while b # 0 do
       begin
-        call fun1
-        write 2 * c);
+        call q;
+        write (2 * d);
         read(b);
       end
-  end
-end.
+  end.
