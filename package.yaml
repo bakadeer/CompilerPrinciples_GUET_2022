@@ -12,6 +12,7 @@ dependencies:
   - base >= 4.19.2.0 && < 4.20
   - array >= 0.5 && < 0.6
   - mtl >= 2.3.1
+  - containers >=0.6.8
 
 library:
   source-dirs: lib
@@ -20,6 +21,8 @@ library:
     - Token
     - Ast
     - Parser
+    - SymbolTable
+    - Semantic
   language: Haskell2010
   ghc-options: -Wall
 

@@ -1,0 +1,24 @@
+const a := 10;
+var b,c d;
+
+//single commit
+
+/*
+ * mutil commits
+ */
+
+procedure procedure fun1;
+  if a <= 10
+    begin
+     c = b + a
+    end
+  begin
+    read(b)
+    while b # 0
+      begin
+        call fun1
+        write 2 * c);
+        read(b);
+      end
+  end
+end.
