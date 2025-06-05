@@ -1,8 +1,15 @@
 module Main where
 
-import Compiler (compile)
+import Lexer (alexScanTokens)
+import Parser (parseProgram)
+
+printList :: (Show a) => [a] -> IO ()
+printList xs = mapM_ print xs
 
 main :: IO ()
 main = do
-  src <- getContents
-  print $ compile src False
+  inputs <- getContents
+  let toks = alexScanTokens inputs
+  printList toks
+  let result = parseProgram toks
+  putStrLn $ show result

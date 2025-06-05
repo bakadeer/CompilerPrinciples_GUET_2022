@@ -4,7 +4,7 @@ module Lexer (
 	unwrap,
 	SpannedToken(..),
 	alexScanTokens,
-	AlexPosn,
+	AlexPosn(..),
 ) where
 
 import Token
