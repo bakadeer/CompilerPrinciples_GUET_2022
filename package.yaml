@@ -23,6 +23,8 @@ library:
     - Parser
     - SymbolTable
     - Semantic
+    - TokenPrinter
+    - Compiler
   language: Haskell2010
   ghc-options: -Wall
 

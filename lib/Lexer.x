@@ -50,6 +50,7 @@ tokens :-
 	"."                                     { \s _ -> SpannedToken s Dot }
 	"("                                     { \s _ -> SpannedToken s LeftParen }
 	")"                                     { \s _ -> SpannedToken s RightParen }
+  .                                       { \s v -> SpannedToken s (Identifier v)}
 
 {
 data SpannedToken = SpannedToken AlexPosn Token deriving (Show, Eq)

@@ -22,6 +22,8 @@ library
       Parser
       SymbolTable
       Semantic
+      TokenPrinter
+      Compiler
   other-modules:
       Paths_CompilerPrinciples_GUET2022
   hs-source-dirs:
