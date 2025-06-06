@@ -14,7 +14,6 @@ import Token
 
 $digit = 0-9
 $alpha = [a-zA-Z]
-
 tokens :-
 
 	$white+                                 ;
