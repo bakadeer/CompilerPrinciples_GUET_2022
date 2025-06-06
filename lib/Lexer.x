@@ -20,6 +20,7 @@ tokens :-
 
 	$white+                                 ;
 	"//".*                                  ;
+  "/*"[.\r\n]*"*/"                        ;
 	const                                   { \s _ -> SpannedToken s Const }
 	var                                     { \s _ -> SpannedToken s Var }
 	procedure                               { \s _ -> SpannedToken s Procedure }
@@ -54,25 +55,6 @@ tokens :-
 	.                                       { \s v -> SpannedToken s (Identifier v)}
 
 {
--- 预处理函数，移除多行注释
-removeBlockComments :: String -> String
-removeBlockComments [] = []
-removeBlockComments ('/':'*':rest) = 
-  case findCommentEnd rest of
-    Just remaining -> removeBlockComments remaining
-    Nothing -> error "Unterminated block comment"
-removeBlockComments (c:rest) = c : removeBlockComments rest
-
--- 找到注释结束位置
-findCommentEnd :: String -> Maybe String
-findCommentEnd [] = Nothing
-findCommentEnd ('*':'/':rest) = Just rest
-findCommentEnd (_:rest) = findCommentEnd rest
-
--- 包装原始的 alexScanTokens 函数来预处理输入
-scanTokens :: String -> [SpannedToken]
-scanTokens input = alexScanTokens (removeBlockComments input)
-
 data SpannedToken = SpannedToken AlexPosn Token deriving (Show, Eq)
 
 spanOf :: SpannedToken -> AlexPosn
