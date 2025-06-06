@@ -14,8 +14,8 @@ data Token
   | Read
   | Write
   | Call
-  | Integer       Int
-  | Identifier    String
+  | Integer Int
+  | Identifier String
   | LeftParen
   | RightParen
   | Semicolon
