@@ -17,14 +17,14 @@ type Codegen a = StateT [Quad] (State Context) a
 emit :: Quad -> Codegen ()
 emit quad = modify (quad :)
 
--- 获取新临时变量名
+-- 获取新临时变量名 t0, t1, etc
 newTemp :: Codegen String
 newTemp = do
   (t, l) <- lift get
   lift $ put (t + 1, l)
   return $ "t" ++ show t
 
--- 获取新标签名
+-- 获取新标签名 L0, L1, etc
 newLabel :: Codegen String
 newLabel = do
   (t, l) <- lift get
@@ -32,11 +32,13 @@ newLabel = do
   return $ "L" ++ show l
 
 -- 主要函数：AST -> 四元式列表
+-- 最终结果是逆序的，因此使用 reverse 返回正确顺序。
 generateQuads :: Ast -> [Quad]
 generateQuads (Program sub) =
   let ((_, quads), _) = runState (runStateT (genProgram sub) []) (0, 0)
   in reverse quads
 
+-- genProgram：处理整个程序结构，包括常量、变量、过程声明及主程序语句。
 genProgram :: Subprogram -> Codegen ()
 genProgram (Subprogram mConst mVar mProc mainStmt) = do
   emit $ Quad (Ir.SysStart, Nothing, Nothing, Nothing)
@@ -65,6 +67,7 @@ genProgram (Subprogram mConst mVar mProc mainStmt) = do
   genStmt mainStmt
   emit $ Quad (Ir.SysEnd, Nothing, Nothing, Nothing)
 
+-- genProc：生成过程的四元组表示。
 genProc :: ProcDecl -> Codegen ()
 genProc (ProcDecl (ProcHeader name) body _) = do
   emit $ Quad (Ir.Procedure, Just name, Nothing, Nothing)
@@ -72,10 +75,13 @@ genProc (ProcDecl (ProcHeader name) body _) = do
   emit $ Quad (Ir.Ret, Nothing, Nothing, Nothing)
 
 genStmt :: Stmt -> Codegen ()
+
+-- 赋值
 genStmt (AssignStmt dest expr) = do
   result <- genExpr expr
   emit $ Quad (Assign, Just result, Nothing, Just dest)
 
+-- 条件
 genStmt (CondStmt (Cond e1 _ e2) thenStmt) = do
   v1 <- genExpr e1
   v2 <- genExpr e2
@@ -83,6 +89,7 @@ genStmt (CondStmt (Cond e1 _ e2) thenStmt) = do
   emit $ Quad (JumpLe, Just v1, Just v2, Just label)
   genStmt thenStmt
 
+-- 循环
 genStmt (LoopStmt (Cond e1 _ e2) doStmt) = do
   start <- newLabel
   loop <- newLabel
@@ -105,35 +112,43 @@ genStmt (LoopStmt (Cond e1 _ e2) doStmt) = do
   -- 循环结束标签
   emit $ Quad (Ir.Label, Just end, Nothing, Nothing)
 
+-- 调用
 genStmt (CallStmt proc) =
   emit $ Quad (Ir.Call, Just proc, Nothing, Nothing)
 
+-- 读
 genStmt (ReadStmt vars) =
   mapM_ (\var -> emit $ Quad (Ir.Read, Just var, Nothing, Nothing)) vars
 
+-- 写
 genStmt (WriteStmt exprs) = do
   mapM_ (\expr -> do
       val <- genExpr expr
       emit $ Quad (Ir.Write, Just val, Nothing, Nothing)
     ) exprs
 
+-- 复合语句
 genStmt (CompoundStmt stmts) =
   mapM_ genStmt stmts
 
+-- 空语句
 genStmt NullStmt = return ()
 
+-- 表达式生成：Expr -> 四元式
 genExpr :: Expr -> Codegen String
 genExpr (Expr _ item []) = genItem item
 genExpr (Expr _ i1 ((op,i2):rest)) = do
   v1 <- genItem i1
   v2 <- genItem i2
   temp <- newTemp
+  -- 根据操作符生成四元式
   emit $ Quad (transOp op, Just v1, Just v2, Just temp)
   return temp
   where
     transOp Ast.Add = Ir.Add
     transOp Ast.Sub = Ir.Sub
 
+-- 生成四元组：Item -> 四元式
 genItem :: Item -> Codegen String
 genItem (Item f []) = genFactor f
 genItem (Item f1 ((op,f2):rest)) = do
@@ -146,6 +161,7 @@ genItem (Item f1 ((op,f2):rest)) = do
     transOp Ast.Mul = Ir.Mul
     transOp Ast.Div = Ir.Div
 
+-- 因子生成：Factor -> 四元式
 genFactor :: Factor -> Codegen String
 genFactor (Ast.Identifier name) = return name
 genFactor (Ast.Number val) = return $ show val

@@ -22,12 +22,15 @@ semanticCheck (Program sub) = checkSubprogram Map.empty sub
 -- 检查子程序
 checkSubprogram :: SymbolTable -> Subprogram -> Either SemanticError SymbolTable
 checkSubprogram table (Subprogram mConst mVar mProc s_stmt) = do
+  -- 声明常量
   table1 <- case mConst of
     Nothing -> Right table
     Just (ConstDecl defs) -> foldl (\acc (ConstDefi ident _) -> acc >>= declareConst ident) (Right table) defs
+  -- 声明变量
   table2 <- case mVar of
     Nothing -> Right table1
     Just (VarDecl idents) -> foldl (\acc ident -> acc >>= declareVar ident) (Right table1) idents
+  -- 声明过程
   table3 <- case mProc of
     Nothing -> Right table2
     Just proc -> declareProcs table2 proc
