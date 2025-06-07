@@ -19,6 +19,7 @@ tokens :-
 
 	$white+                                 ;
 	"//".*                                  ;
+	"/*"[.\r\n]*"*/"						;
 	const                                   { \s _ -> SpannedToken s Const }
 	var                                     { \s _ -> SpannedToken s Var }
 	procedure                               { \s _ -> SpannedToken s Procedure }
