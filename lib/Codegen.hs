@@ -13,6 +13,10 @@ type Context = (Int, Int)
 -- 使用双层 StateT：外层是 Quad 列表，内层是 Context
 type Codegen a = StateT [Quad] (State Context) a
 
+-- 添加四元式到列表中
+emit :: Quad -> Codegen ()
+emit quad = modify (quad :)
+
 -- 获取新临时变量名
 newTemp :: Codegen String
 newTemp = do
@@ -30,120 +34,119 @@ newLabel = do
 -- 主要函数：AST -> 四元式列表
 generateQuads :: Ast -> [Quad]
 generateQuads (Program sub) =
-  let ((_, quads), _) = runState (runStateT (checkSubprogram sub) []) (0, 0)
+  let ((_, quads), _) = runState (runStateT (genProgram sub) []) (0, 0)
   in reverse quads
 
-checkSubprogram :: Subprogram -> Codegen ()
-checkSubprogram (Subprogram mConst mVar mProc mainStmt) = do
-  case mProc of
+genProgram :: Subprogram -> Codegen ()
+genProgram (Subprogram mConst mVar mProc mainStmt) = do
+  emit $ Quad (Ir.SysStart, Nothing, Nothing, Nothing)
+  
+  -- 常量声明
+  case mConst of 
+    Just (ConstDecl defs) -> 
+      mapM_ (\(ConstDefi name val) -> do
+        emit $ Quad (Ir.Const, Just name, Nothing, Nothing)
+        emit $ Quad (Ir.Assign, Just (show val), Nothing, Just name)
+      ) defs
     Nothing -> return ()
-    Just (ProcDecl header sub more) -> do
-      translateStmt $ stmtToList (stmt sub)
-      mapM_ (\p -> translateStmt $ stmtToList (stmt $ subprogram p)) more
-  translateStmt $ stmtToList mainStmt
 
--- 将 Stmt 转换为 Stmt 列表（如果是 CompoundStmt，则展开）
-stmtToList :: Stmt -> [Stmt]
-stmtToList (CompoundStmt ss) = ss
-stmtToList s                 = [s]
+  -- 变量声明
+  case mVar of
+    Just (VarDecl vars) ->
+      mapM_ (\name -> emit $ Quad (Ir.Var, Just name, Nothing, Nothing)) vars
+    Nothing -> return ()
 
--- 翻译一条或多条语句
-translateStmt :: [Stmt] -> Codegen ()
-translateStmt = mapM_ translateOneStmt
+  -- 过程声明
+  case mProc of
+    Just proc -> genProc proc
+    Nothing -> return ()
 
--- 处理赋值语句
-translateOneStmt (AssignStmt ident expr) = do
-  val <- translateExpr expr
-  emit $ Quad (Assign, Just val, Nothing, Just ident)
+  -- 主程序语句
+  genStmt mainStmt
+  emit $ Quad (Ir.SysEnd, Nothing, Nothing, Nothing)
 
--- 处理 if 语句（仅支持 then）
-translateOneStmt (CondStmt (Cond cond relop expr) stmt) = do
-  lFalse <- newLabel
-  lEnd   <- newLabel
-  -- 条件判断
-  left  <- translateExpr cond
-  right <- translateExpr expr
-  emit $ Quad (case relop of
-                Ast.Eq           -> Ir.Eq
-                Ast.NotEq        -> Ir.Neq
-                Ast.LessThan     -> Ir.Lt
-                Ast.LessEqThan   -> Ir.Le
-                Ast.GreaterThan  -> Ir.Gt
-                Ast.GreaterEqThan-> Ge, Just left, Just right, Just lFalse)
-  emit $ Quad (IfFalseJump, Just lFalse, Nothing, Nothing)
-  translateOneStmt stmt
-  emit $ Quad (Jump, Just lEnd, Nothing, Nothing)
-  emit $ Quad (Label, Just lFalse, Nothing, Nothing)
-  emit $ Quad (Label, Just lEnd, Nothing, Nothing)
+genProc :: ProcDecl -> Codegen ()
+genProc (ProcDecl (ProcHeader name) body _) = do
+  emit $ Quad (Ir.Procedure, Just name, Nothing, Nothing)
+  genStmt (stmt body)
+  emit $ Quad (Ir.Ret, Nothing, Nothing, Nothing)
 
--- 处理 while ... do ...
-translateOneStmt (LoopStmt (Cond cond relop expr) stmt) = do
-  lStart <- newLabel
-  lFalse <- newLabel
-  emit $ Quad (Label, Just lStart, Nothing, Nothing)
-  left  <- translateExpr cond
-  right <- translateExpr expr
-  emit $ Quad (case relop of
-                Ast.Eq           -> Ir.Eq
-                Ast.NotEq        -> Ir.Neq
-                Ast.LessThan     -> Ir.Lt
-                Ast.LessEqThan   -> Ir.Le
-                Ast.GreaterThan  -> Ir.Gt
-                Ast.GreaterEqThan-> Ge, Just left, Just right, Just lFalse)
-  emit $ Quad (IfFalseJump, Just lFalse, Nothing, Nothing)
-  translateOneStmt stmt
-  emit $ Quad (Jump, Just lStart, Nothing, Nothing)
-  emit $ Quad (Label, Just lFalse, Nothing, Nothing)
+genStmt :: Stmt -> Codegen ()
+genStmt (AssignStmt dest expr) = do
+  result <- genExpr expr
+  emit $ Quad (Assign, Just result, Nothing, Just dest)
 
--- read(...)
-translateOneStmt (ReadStmt idents) =
-  mapM_ (\ident -> emit $ Quad (Ir.Read, Just ident, Nothing, Nothing)) idents
+genStmt (CondStmt (Cond e1 _ e2) thenStmt) = do
+  v1 <- genExpr e1
+  v2 <- genExpr e2
+  label <- newLabel
+  emit $ Quad (JumpLe, Just v1, Just v2, Just label)
+  genStmt thenStmt
 
--- write(...)
-translateOneStmt (WriteStmt exprs) = do
-  vals <- mapM translateExpr exprs
-  mapM_ (\val -> emit $ Quad (Ir.Write, Just val, Nothing, Nothing)) vals
+genStmt (LoopStmt (Cond e1 _ e2) doStmt) = do
+  start <- newLabel
+  loop <- newLabel
+  end <- newLabel
+  
+  -- 循环开始标签
+  emit $ Quad (Ir.Label, Just start, Nothing, Nothing)
+  
+  -- 生成条件判断代码
+  v1 <- genExpr e1
+  v2 <- genExpr e2
+  emit $ Quad (Ir.JumpNeq, Just v1, Just v2, Just loop)
+  emit $ Quad (Ir.JumpEq, Just v1, Just v2, Just end)
+  
+  -- 循环体标签和代码
+  emit $ Quad (Ir.Label, Just loop, Nothing, Nothing)
+  genStmt doStmt
+  emit $ Quad (Ir.Jump, Just start, Nothing, Nothing)
+  
+  -- 循环结束标签
+  emit $ Quad (Ir.Label, Just end, Nothing, Nothing)
 
--- 复合语句 begin ... end
-translateOneStmt (CompoundStmt stmts) = translateStmt stmts
+genStmt (CallStmt proc) =
+  emit $ Quad (Ir.Call, Just proc, Nothing, Nothing)
 
+genStmt (ReadStmt vars) =
+  mapM_ (\var -> emit $ Quad (Ir.Read, Just var, Nothing, Nothing)) vars
 
--- 其它暂不支持
-translateOneStmt _ = return ()
+genStmt (WriteStmt exprs) = do
+  mapM_ (\expr -> do
+      val <- genExpr expr
+      emit $ Quad (Ir.Write, Just val, Nothing, Nothing)
+    ) exprs
 
--- 表达式翻译成中间代码
-translateExpr :: Expr -> Codegen String
-translateExpr (Expr sign item terms) = do
-  base <- translateItem item
-  rest <- mapM (\(op, i) -> do
-                  rhs <- translateItem i
-                  temp <- newTemp
-                  let quadOp = case op of
-                                Ast.Add -> Ir.Add
-                                Ast.Sub -> Ir.Sub
-                  emit $ Quad (quadOp, Just base, Just rhs, Just temp)
-                  return temp) terms
-  return $ last (base : rest)
+genStmt (CompoundStmt stmts) =
+  mapM_ genStmt stmts
 
-translateItem :: Item -> Codegen String
-translateItem (Item factor factors) = do
-  base <- translateFactor factor
-  rest <- mapM (\(op, f) -> do
-                  rhs <- translateFactor f
-                  temp <- newTemp
-                  let quadOp = case op of
-                                Ast.Mul -> Ir.Mul
-                                Ast.Div -> Ir.Div
-                  emit $ Quad (quadOp, Just base, Just rhs, Just temp)
-                  return temp) factors
-  return $ last (base : rest)
+genStmt NullStmt = return ()
 
-translateFactor :: Factor -> Codegen String
-translateFactor (Ast.Identifier ident) = return ident
-translateFactor (Ast.Number val) = return $ show val
-translateFactor (ParenedExpr expr) = translateExpr expr
+genExpr :: Expr -> Codegen String
+genExpr (Expr _ item []) = genItem item
+genExpr (Expr _ i1 ((op,i2):rest)) = do
+  v1 <- genItem i1
+  v2 <- genItem i2
+  temp <- newTemp
+  emit $ Quad (transOp op, Just v1, Just v2, Just temp)
+  return temp
+  where
+    transOp Ast.Add = Ir.Add
+    transOp Ast.Sub = Ir.Sub
 
--- 插入四元式到结果中
-emit :: Quad -> Codegen ()
-emit quad = modify (quad :)
+genItem :: Item -> Codegen String
+genItem (Item f []) = genFactor f
+genItem (Item f1 ((op,f2):rest)) = do
+  v1 <- genFactor f1 
+  v2 <- genFactor f2
+  temp <- newTemp
+  emit $ Quad (transOp op, Just v1, Just v2, Just temp)
+  return temp
+  where
+    transOp Ast.Mul = Ir.Mul
+    transOp Ast.Div = Ir.Div
 
+genFactor :: Factor -> Codegen String
+genFactor (Ast.Identifier name) = return name
+genFactor (Ast.Number val) = return $ show val
+genFactor (Ast.ParenedExpr expr) = genExpr expr

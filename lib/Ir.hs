@@ -2,8 +2,13 @@
 module Ir where
 
 -- 四元式操作符
-data Op = Add | Sub | Mul | Div | Assign | Eq | Neq | Lt | Le | Gt | Ge 
-        | IfFalseJump | Jump | Call | Label | Write | Read
+data Op = Add | Sub | Mul | Div | Assign 
+        | Eq | Neq | Lt | Le | Gt | Ge 
+        | JumpEq | JumpNeq | JumpLe
+        | Jump | Call | Ret | Label
+        | Write | Read
+        | Const | Var | Procedure
+        | SysStart | SysEnd
   deriving (Eq, Show)
 
 -- 四元式结构：(操作符, 操作数1, 操作数2, 结果)
@@ -18,20 +23,25 @@ instance Show Quad where
                   Sub -> "-"
                   Mul -> "*"
                   Div -> "/"
-                  Assign -> ":="
-                  Eq -> "="
-                  Neq -> "#"
-                  Lt -> "<"
-                  Le -> "<="
-                  Gt -> ">"
-                  Ge -> ">="
-                  IfFalseJump -> "if_false_jump"
-                  Jump -> "jump"
+                  Assign -> "="
+                  JumpEq -> "j="
+                  JumpNeq -> "j#"
+                  JumpLe -> "j<="
+                  Jump -> "j"
                   Call -> "call"
-                  Label -> "label"
+                  Ret -> "ret"
                   Write -> "write"
                   Read -> "read"
-    in "[" ++ opStr ++ ", " ++ showOpt a1 ++ ", " ++ showOpt a2 ++ ", " ++ showOpt res ++ "]"
+                  Const -> "const"
+                  Var -> "var"
+                  Procedure -> "procedure"
+                  SysStart -> "syss"
+                  SysEnd -> "syse"
+                  _ -> show op
+        a1Str = maybe "_" id a1
+        a2Str = maybe "_" id a2
+        resStr = maybe "_" id res
+    in "(" ++ opStr ++ "," ++ a1Str ++ "," ++ a2Str ++ "," ++ resStr ++ ")"
 
 showOpt :: Show a => Maybe a -> String
 showOpt Nothing = "_"

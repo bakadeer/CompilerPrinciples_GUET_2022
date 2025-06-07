@@ -6,12 +6,18 @@ import Parser
 import Ast (Ast)
 import Codegen (generateQuads)
 import Ir (Quad)
+import Semantic (semanticCheck)
 
 compile :: String -> Bool -> ([Quad], Ast)
 compile src useLl
   | not useLl =
-    let ast = parseToAst . alexScanTokens $ src
-        quads = generateQuads ast
-        _ = putStrLn "Generated Quads:" >> mapM_ print quads
+    let tokens = alexScanTokens src
+        ast = parseToAst tokens
+        -- 新增语义检查
+        semanticResult = semanticCheck ast
+    in case semanticResult of
+      Left err -> error $ "Semantic error: " ++ show err
+      Right () -> 
+        let quads = generateQuads ast
+            _ = putStrLn "Generated Quads:" >> mapM_ print quads
         in (quads, ast)
-  | otherwise = error "Ll unimplemented yet!"
