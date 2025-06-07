@@ -1,4 +1,4 @@
-module Semantic (semanticCheck, SemanticError(..)) where
+module Semantic (semanticCheck, SemanticError(..),SymbolInfo) where
 
 import Ast
 import qualified Data.Map as Map
@@ -16,11 +16,11 @@ type SymbolTable = Map.Map Ident SymbolInfo
 data SymbolInfo = VarInfo | ConstInfo | ProcInfo deriving (Show, Eq)
 
 -- 入口
-semanticCheck :: Ast -> Either SemanticError ()
+semanticCheck :: Ast -> Either SemanticError SymbolTable
 semanticCheck (Program sub) = checkSubprogram Map.empty sub
 
 -- 检查子程序
-checkSubprogram :: SymbolTable -> Subprogram -> Either SemanticError ()
+checkSubprogram :: SymbolTable -> Subprogram -> Either SemanticError SymbolTable
 checkSubprogram table (Subprogram mConst mVar mProc s_stmt) = do
   table1 <- case mConst of
     Nothing -> Right table
@@ -31,7 +31,8 @@ checkSubprogram table (Subprogram mConst mVar mProc s_stmt) = do
   table3 <- case mProc of
     Nothing -> Right table2
     Just proc -> declareProcs table2 proc
-  checkStmt table3 s_stmt
+  _ <- checkStmt table3 s_stmt
+  Right table3
 
 -- 声明所有过程（递归处理 moreProcs）
 declareProcs :: SymbolTable -> ProcDecl -> Either SemanticError SymbolTable

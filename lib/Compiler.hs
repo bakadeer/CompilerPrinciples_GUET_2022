@@ -3,21 +3,20 @@ module Compiler (compile) where
 
 import Lexer (alexScanTokens)
 import Parser
-import Ast (Ast)
+import Ast (Ast, Ident)
 import Codegen (generateQuads)
 import Ir (Quad)
-import Semantic (semanticCheck)
+import Semantic (semanticCheck, SymbolInfo)
+import qualified Data.Map as Map
 
-compile :: String -> Bool -> ([Quad], Ast)
+compile :: String -> Bool -> ([Quad], Ast, Map.Map Ident SymbolInfo)
 compile src useLl
   | not useLl =
     let tokens = alexScanTokens src
         ast = parseToAst tokens
-        -- 新增语义检查
         semanticResult = semanticCheck ast
     in case semanticResult of
       Left err -> error $ "Semantic error: " ++ show err
-      Right () -> 
+      Right table ->
         let quads = generateQuads ast
-            _ = putStrLn "Generated Quads:" >> mapM_ print quads
-        in (quads, ast)
+        in (quads, ast, table)
