@@ -24,7 +24,9 @@ checkSubprogram :: SymbolTable -> Subprogram -> Either SemanticError SymbolTable
 checkSubprogram table (Subprogram mConst mVar mProc s_stmt) = do
   -- 声明常量
   table1 <- case mConst of
+    -- 若无了常量声明，则返回当前符号表
     Nothing -> Right table
+    -- 若仍有常量声明，则检查常量声明并更新符号表，foldl：
     Just (ConstDecl defs) -> foldl (\acc (ConstDefi ident _) -> acc >>= declareConst ident) (Right table) defs
   -- 声明变量
   table2 <- case mVar of
@@ -45,12 +47,13 @@ declareProcs table (ProcDecl (ProcHeader ident) sub more) = do
   _ <- checkSubprogram table1 sub
   foldl (\acc p -> acc >>= \t -> declareProcs t p) (Right table1) more
 
--- 声明常量
+-- 声明常量，将ident(常量名)加入符号表
 declareConst :: Ident -> SymbolTable -> Either SemanticError SymbolTable
 declareConst ident table =
-  if Map.member ident table
-    then Left (DuplicateDeclaration ident)
-    else Right (Map.insert ident ConstInfo table)
+  if Map.member ident table                       -- if 符号表已存在 ident
+    then Left (DuplicateDeclaration ident)        -- 抛出错误，重复声明
+    -- 调用Map.insert，参数是ident和ConstInfo，返回新的符号表
+    else Right (Map.insert ident ConstInfo table) 
 
 -- 声明变量
 declareVar :: Ident -> SymbolTable -> Either SemanticError SymbolTable
