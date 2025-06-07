@@ -41,7 +41,7 @@ checkSubprogram table (Subprogram mConst mVar mProc s_stmt) = do
 declareProcs :: SymbolTable -> ProcDecl -> Either SemanticError SymbolTable
 declareProcs table (ProcDecl (ProcHeader ident) sub more) = do
   table1 <- declareProc ident table
-  -- 过程体用新作用域（但这里只做符号检查，实际作用域可根据需要扩展）
+  -- 过程体用新作用域
   _ <- checkSubprogram table1 sub
   foldl (\acc p -> acc >>= \t -> declareProcs t p) (Right table1) more
 
@@ -105,11 +105,13 @@ checkExpr table (Expr _ item rest) = do
   checkItem table item
   mapM_ (\(_, it) -> checkItem table it) rest
 
+--  检查项
 checkItem :: SymbolTable -> Item -> Either SemanticError ()
 checkItem table (Item factor rest) = do
   checkFactor table factor
   mapM_ (\(_, f) -> checkFactor table f) rest
 
+-- 检查因子
 checkFactor :: SymbolTable -> Factor -> Either SemanticError ()
 checkFactor table factor = case factor of
   Identifier ident ->
