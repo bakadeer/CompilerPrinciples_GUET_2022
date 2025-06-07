@@ -3,7 +3,6 @@ module Lexer (
 	spanOf,
 	unwrap,
 	SpannedToken(..),
-	scanTokens,  -- 使用我们的包装函数
 	alexScanTokens,  -- 保留原始函数以防需要
 	AlexPosn(..),
 ) where

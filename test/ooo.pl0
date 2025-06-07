@@ -1,8 +1,9 @@
 const a = 10;
-var a, b, c;
+var b, c;
 
 
 procedure  p;
+  const x := 10;
   if a <= 10 then
     begin
      c := b + a

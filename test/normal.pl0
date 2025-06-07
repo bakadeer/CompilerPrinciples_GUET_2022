@@ -2,6 +2,7 @@ const a = 10;
 var b, c;
 
 procedure fun1;
+  const x = 78;
 	if a <= 10 then
 	begin
 		c := b + a;
