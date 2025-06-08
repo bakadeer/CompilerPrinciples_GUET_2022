@@ -33,7 +33,7 @@ newtype ProcHeader = ProcHeader Ident deriving (Show, Eq)
 
 -- 语句 枚举构造器
 data Stmt = AssignStmt Ident Expr   --赋值语句，由标识符和表达式组成
-          | CondStmt Cond Stmt      --条件语句，由条件表达式和语句组成
+          | CondStmt Cond Stmt      --条件语句，由条件表达式和语句组成，语句就是acc之后要运行的
           | LoopStmt Cond Stmt      --循环语句，由条件表达式和语句组成
           | CallStmt Ident          --调用语句，由标识符组成
           | ReadStmt [Ident]        --读入语句，由标识符列表组成
@@ -47,7 +47,7 @@ data Cond = Cond Expr RelaOp Expr
           | OddCond Expr
           deriving (Show, Eq)
 
--- 表达式
+-- 表达式,由一个可能的正负号+项、一个或多个项和运算符组成
 data Expr = Expr (Maybe Sign) Item [(AddSubOp, Item)] deriving (Show, Eq)
 
 -- 符号

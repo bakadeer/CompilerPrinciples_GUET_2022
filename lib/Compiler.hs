@@ -5,7 +5,7 @@ import Lexer (alexScanTokens)
 import Parser
 import Ast (Ast, Ident)
 import Codegen (generateQuads)
-import Ir (Quad)
+import Ir(Quad)
 import Semantic (semanticCheck, SymbolInfo)
 import qualified Data.Map as Map
 
@@ -27,3 +27,6 @@ compile src useLl
         let quads = generateQuads ast
         -- 成功返回四元组、AST和符号表
         in (quads, ast, table)
+
+  | otherwise =
+    error "LLVM code generation is not yet implemented"

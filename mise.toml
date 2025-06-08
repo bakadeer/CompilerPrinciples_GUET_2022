@@ -12,3 +12,7 @@ run = "stack run"
 [tasks.test]
 description = "Run the tests"
 run = "type test\\normal.pl0 | stack  run"
+
+[tasks.testWrong]
+description = "Run the tests wrong"
+run = "type test\\wrong.pl0 | stack  run"

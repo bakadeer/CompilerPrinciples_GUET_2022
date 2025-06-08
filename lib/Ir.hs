@@ -4,19 +4,21 @@ module Ir where
 -- 四元式操作符
 data Op = Add | Sub | Mul | Div | Assign 
         | Eq | Neq | Lt | Le | Gt | Ge 
-        | JumpEq | JumpNeq | JumpLe
+        | JumpEq | JumpNeq | JumpLe | JumpLt | JumpGt | JumpGe
         | Jump | Call | Ret | Label
         | Write | Read
         | Const | Var | Procedure
         | SysStart | SysEnd
+        | Test
   deriving (Eq, Show)
+
 
 -- 四元式结构：(操作符, 操作数1, 操作数2, 结果)
 newtype Quad = Quad { getQuad :: (Op, Maybe String, Maybe String, Maybe String) }
   deriving (Eq)
 
 -- 显示四元式
-instance Show Quad where
+instance Show Quad  where
   show (Quad (op, a1, a2, res)) =
     let opStr = case op of
                   Add -> "+"
@@ -41,7 +43,7 @@ instance Show Quad where
         a1Str = maybe "_" id a1
         a2Str = maybe "_" id a2
         resStr = maybe "_" id res
-    in "(" ++ opStr ++ "," ++ a1Str ++ "," ++ a2Str ++ "," ++ resStr ++ ")"
+    in  "(" ++ opStr ++ "," ++ a1Str ++ "," ++ a2Str ++ "," ++ resStr ++ ")"
 
 showOpt :: Show a => Maybe a -> String
 showOpt Nothing = "_"
